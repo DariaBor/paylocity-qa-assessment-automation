@@ -1,8 +1,18 @@
-import { expect, Page, Browser } from '@playwright/test';
+import { expect, Page, Browser, Locator } from '@playwright/test';
 import fs from 'fs';
 
 export class LoginPage {
-  constructor(private page: Page) {}
+  readonly usernameInput: Locator;
+  readonly passwordInput: Locator;
+  readonly submitButton: Locator;
+  readonly employeesTable: Locator;
+
+  constructor(private page: Page) {
+    this.usernameInput = this.page.locator('#Username');
+    this.passwordInput = this.page.locator('#Password');
+    this.submitButton = this.page.locator('button[type=submit]');
+    this.employeesTable = this.page.locator('#employeesTable');
+  }
 
   async goto() {
     await this.page.goto('/Prod/Account/Login');
@@ -10,10 +20,10 @@ export class LoginPage {
 
   async login(username: string, password: string, authStateFile?: string) {
     await this.goto();
-    await this.page.fill('#Username', username);
-    await this.page.fill('#Password', password);
-    await this.page.click('button[type=submit]');
-    await expect(this.page.locator('#employeesTable')).toBeVisible();
+    await this.usernameInput.fill(username);
+    await this.passwordInput.fill(password);
+    await this.submitButton.click();
+    await expect(this.employeesTable).toBeVisible();
 
     if (authStateFile) {
       await this.page.context().storageState({

@@ -1,16 +1,26 @@
-import { Page } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
 
 export class AddEmployeeModal {
-  constructor(private page: Page) {}
+  readonly firstNameInput: Locator;
+  readonly lastNameInput: Locator;
+  readonly dependantsInput: Locator;
+  readonly submitButton: Locator;
+
+  constructor(private page: Page) {
+    this.firstNameInput = this.page.locator('#firstName');
+    this.lastNameInput = this.page.locator('#lastName');
+    this.dependantsInput = this.page.locator('#dependants');
+    this.submitButton = this.page.locator('#addEmployee');
+  }
 
   async fillEmployee(data: any) {
-    await this.page.fill('#firstName', data.firstName);
-    await this.page.fill('#lastName', data.lastName);
-    await this.page.fill('#dependants', data.dependants.toString());
+    await this.firstNameInput.fill(data.firstName);
+    await this.lastNameInput.fill(data.lastName);
+    await this.dependantsInput.fill(data.dependants.toString());
   }
 
   async submit() {
-    await this.page.locator('#addEmployee').click();
+    await this.submitButton.click();
   }
 
   async submitAndWaitForResponse() {

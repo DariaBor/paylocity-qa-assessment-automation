@@ -1,21 +1,29 @@
-import { expect, Page } from '@playwright/test';
+import { expect, Page, Locator } from '@playwright/test';
 
 export class DashboardPage {
-  constructor(private page: Page) {}
+  readonly addButton: Locator;
+  readonly employeeModal: Locator;
+  readonly employeeRows: Locator;
 
-  async openAddEmployee() {
-    await this.page.locator('#add').click();
-    await expect(this.page.locator('#employeeModal')).toBeVisible();
+  constructor(private page: Page) {
+    this.addButton = this.page.locator('#add');
+    this.employeeModal = this.page.locator('#employeeModal');
+    this.employeeRows = this.page.locator('table tbody tr');
   }
 
-  async getEmployeeRows() {
-    return this.page.locator('table tbody tr');
+  async openAddEmployee() {
+    await this.addButton.click();
+    await expect(this.employeeModal).toBeVisible();
+  }
+
+  getEmployeeRow(firstName: string, lastName: string): Locator {
+    return this.page.locator(
+      `tr:has-text("${firstName}"):has-text("${lastName}")`,
+    );
   }
 
   async verifyEmployeeVisible(employee: any) {
-    const employeeRow = this.page.locator(
-      `tr:has-text("${employee.firstName}"):has-text("${employee.lastName}")`,
-    );
+    const employeeRow = this.getEmployeeRow(employee.firstName, employee.lastName);
     await expect(employeeRow).toBeVisible();
   }
 }
