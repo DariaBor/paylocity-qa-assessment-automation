@@ -1,0 +1,18 @@
+{
+  "name": "paylocity-qa-assessment-automation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test tests/ui",
+    "test:api": "playwright test tests/api",
+    "test:report": "playwright show-report",
+    "browsers:install": "npx playwright install --with-deps chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "dotenv": "^16.0.0",
+    "typescript": "^5.4.0"
+  }
+}

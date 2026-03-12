@@ -1,0 +1,66 @@
+name: Playwright Tests
+
+on:
+    workflow_dispatch:
+        inputs:
+            branch:
+                description: 'Branch to test'
+                required: false
+                default: 'main'
+
+jobs:
+    api-tests:
+        runs-on: ubuntu-latest
+
+        env:
+            TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+            TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - run: npm ci
+
+            - run: npm run browsers:install
+
+            - run: npm run test:api
+
+            - name: Upload Test Results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-report-api
+                  path: playwright-report/
+                  retention-days: 2
+
+    ui-tests:
+        runs-on: ubuntu-latest
+
+        env:
+            TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+            TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - run: npm ci
+
+            - run: npm run browsers:install
+
+            - run: npm run test:ui
+
+            - name: Upload Test Results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-report-ui
+                  path: playwright-report/
+                  retention-days: 2
