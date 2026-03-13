@@ -25,9 +25,18 @@ test.describe('Employees UI tests', () => {
     });
   }
 
+  let employeeId: string | undefined;
+
   test.beforeEach(async ({ page, context }) => {
+    employeeId = undefined;
     await page.goto('/Prod/Benefits');
     await setupAuthRoute(context);
+  });
+
+  test.afterEach(async ({ employeesService }) => {
+    if (employeeId) {
+      await employeesService.deleteEmployee(employeeId);
+    }
   });
 
   test('Add new employee record', async ({ dashboard, modal }) => {
@@ -39,9 +48,9 @@ test.describe('Employees UI tests', () => {
 
     await dashboard.openAddEmployee();
     await modal.fillEmployee(newEmployee);
-    verifyEmployeeResponse(
-      await (await modal.submitAndWaitForResponse()).json(),
-    );
+    const response = await (await modal.submitAndWaitForResponse()).json();
+    verifyEmployeeResponse(response);
+    employeeId = response.id;
     await dashboard.verifyEmployeeVisible(newEmployee);
   });
 
